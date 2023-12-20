@@ -17,16 +17,16 @@ const db = mysql.createConnection(
     user: 'root',
     // TODO: Add MySQL password here
     password: '',
-    database: 'movies_db'
+    database: 'employeeTracker_db'
   },
-  console.log(`Connected to the movies_db database.`)
+  console.log(`Connected to the employeeTracker_db database.`)
 );
 
 // Create a movie
-app.post('/api/new-movie', ({ body }, res) => {
-  const sql = `INSERT INTO movies (movie_name)
+app.post('/api/new-employee', ({ body }, res) => {
+  const sql = `INSERT INTO employee (employee_name)
     VALUES (?)`;
-  const params = [body.movie_name];
+  const params = [body.employee_name];
   
   db.query(sql, params, (err, result) => {
     if (err) {
@@ -40,9 +40,9 @@ app.post('/api/new-movie', ({ body }, res) => {
   });
 });
 
-// Read all movies
-app.get('/api/movies', (req, res) => {
-  const sql = `SELECT id, movie_name AS title FROM movies`;
+// Read all employee
+app.get('/api/employee', (req, res) => {
+  const sql = `SELECT id, employee_name AS title FROM Tracker`;
   
   db.query(sql, (err, rows) => {
     if (err) {
@@ -56,9 +56,9 @@ app.get('/api/movies', (req, res) => {
   });
 });
 
-// Delete a movie
+// Delete a employee
 app.delete('/api/movie/:id', (req, res) => {
-  const sql = `DELETE FROM movies WHERE id = ?`;
+  const sql = `DELETE FROM employee WHERE id = ?`;
   const params = [req.params.id];
   
   db.query(sql, params, (err, result) => {
@@ -66,7 +66,7 @@ app.delete('/api/movie/:id', (req, res) => {
       res.statusMessage(400).json({ error: res.message });
     } else if (!result.affectedRows) {
       res.json({
-      message: 'Movie not found'
+      message: 'employee not found'
       });
     } else {
       res.json({
@@ -80,7 +80,7 @@ app.delete('/api/movie/:id', (req, res) => {
 
 // Read list of all reviews and associated movie name using LEFT JOIN
 app.get('/api/movie-reviews', (req, res) => {
-  const sql = `SELECT movies.movie_name AS movie, reviews.review FROM reviews LEFT JOIN movies ON reviews.movie_id = movies.id ORDER BY movies.movie_name;`;
+  const sql = `SELECT employee.id_name AS movie, reviews.review FROM reviews LEFT JOIN movies ON reviews.movie_id = movies.id ORDER BY movies.movie_name;`;
   db.query(sql, (err, rows) => {
     if (err) {
       res.status(500).json({ error: err.message });
