@@ -1,13 +1,7 @@
-const express = require('express');
+const { default: inquirer } = require("inquirer");
+const inreq = require ("inquirer")
 // Import and require mysql2
 const mysql = require('mysql2');
-
-const PORT = process.env.PORT || 3001;
-const app = express();
-
-// Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
 
 // Connect to database
 const db = mysql.createConnection(
@@ -21,105 +15,95 @@ const db = mysql.createConnection(
   },
   console.log(`Connected to the employeeTracker_db database.`)
 );
+function menu () {
+  inreq.prompt ( {
+    type: "list",
+    name: "userchoice",
+    choices: ["view departments","view roles","view employees","add department","add role","add employee"], message:" What would you like to do"
+  })
+  .then ((data) =>{
+    if(data.userchoice==="view departments"){
+      viewdepartments()
 
-// Create a movie
-app.post('/api/new-employee', ({ body }, res) => {
-  const sql = `INSERT INTO employee (employee_name)
-    VALUES (?)`;
-  const params = [body.employee_name];
+    }
+
+    if(data.userchoice==="view employees"){
+      viewemployees()
+
+    }
+    
+    if(data.userchoice==="add department"){
+      adddepartment()
+
+    }
+    if(data.userchoice==="add roles"){
+
+    }
+    if(data.userchoice==="add employee"){
+
+    }
+    if(data.userchoice==="exits"){
+
+    }
   
-  db.query(sql, params, (err, result) => {
+  }) 
+}
+function viewdepartments (){
+  const sql = "select * from departments";
+   db.query(sql, (err,results) => {
     if (err) {
       res.status(400).json({ error: err.message });
       return;
     }
-    res.json({
-      message: 'success',
-      data: body
-    });
-  });
-});
-
-// Read all employee
-app.get('/api/employee', (req, res) => {
-  const sql = `SELECT id, employee_name AS title FROM Tracker`;
-  
-  db.query(sql, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-       return;
-    }
-    res.json({
-      message: 'success',
-      data: rows
-    });
-  });
-});
-
-// Delete a employee
-app.delete('/api/movie/:id', (req, res) => {
-  const sql = `DELETE FROM employee WHERE id = ?`;
-  const params = [req.params.id];
-  
-  db.query(sql, params, (err, result) => {
-    if (err) {
-      res.statusMessage(400).json({ error: res.message });
-    } else if (!result.affectedRows) {
-      res.json({
-      message: 'employee not found'
-      });
-    } else {
-      res.json({
-        message: 'deleted',
-        changes: result.affectedRows,
-        id: req.params.id
-      });
-    }
-  });
-});
-
-// Read list of all reviews and associated movie name using LEFT JOIN
-app.get('/api/movie-reviews', (req, res) => {
-  const sql = `SELECT employee.id_name AS movie, reviews.review FROM reviews LEFT JOIN movies ON reviews.movie_id = movies.id ORDER BY movies.movie_name;`;
-  db.query(sql, (err, rows) => {
-    if (err) {
-      res.status(500).json({ error: err.message });
-      return;
-    }
-    res.json({
-      message: 'success',
-      data: rows
-    });
-  });
-});
-
-// BONUS: Update review name
-app.put('/api/review/:id', (req, res) => {
-  const sql = `UPDATE reviews SET review = ? WHERE id = ?`;
-  const params = [req.body.review, req.params.id];
-
-  db.query(sql, params, (err, result) => {
+    console.table (results)
+   })
+}
+function viewroles(){
+  const sql = " select * from roles";
+  db.query(sql, (err,results) => {
     if (err) {
       res.status(400).json({ error: err.message });
-    } else if (!result.affectedRows) {
-      res.json({
-        message: 'Movie not found'
-      });
-    } else {
-      res.json({
-        message: 'success',
-        data: req.body,
-        changes: result.affectedRows
-      });
+      return;
     }
-  });
-});
+    console.table (results)
+   })
 
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+}
+
+function viewemployees (){
+  const sql ="select * from employees";
+  db.query(sql, (err,results) => {
+    if (err) {
+      res.status(400).json({ error: err.message });
+      return;
+    }
+    console.table (results)
+   })
+}
+
+function adddepartment (){
+  inreq.prompt({
+    type:"input",
+    name: "department_name",
+    message:"whats the name of your new department"
+  })
+  .then((data)=>{
+    const sql = "insert into departments (department_name) values (?)";
+    db.query (sql,[data.department_name],(err,results)=>{
+      if (err) {
+        console.log (err)
+        return;
+      }
+      console.table (results)
+    })
+
+  })
+
+}
+
+
+
+
+
+menu ()
