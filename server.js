@@ -37,12 +37,15 @@ function menu () {
 
     }
     if(data.userchoice==="add roles"){
+      addroles()
 
     }
     if(data.userchoice==="add employee"){
+      addemployee()
 
     }
     if(data.userchoice==="exits"){
+      
 
     }
   

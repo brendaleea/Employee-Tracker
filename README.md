@@ -13,6 +13,9 @@ A command-line application to manage a company's employee database, using Node.j
 GitHub Repo Link:
 https://github.com/brendaleea/Employee-Tracker
 
+Video Link : https://drive.google.com/file/d/15nxEqE3fClg2yMo3Y-atVigU_JeD1CBT/view
+
+
 
 
 
